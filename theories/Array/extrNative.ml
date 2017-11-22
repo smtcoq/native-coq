@@ -191,16 +191,16 @@ let addmuldiv p i j =
 	     (l_sl i p) 
 	     (l_sr j (of_int (31 - p'))))
 
-let rec foldi_cont f min max cont a =
-  if lt min max then f min (foldi_cont f (add min 1) max cont) a
-  else if min = max then f min cont a 
-  else cont a 
+let rec foldi_right f min max a =
+  if lt min max then f min (foldi_right f (add min 1) max) a
+  else if min = max then f min a 
+  else a 
 
-let rec foldi_down_cont f max min cont a =
+let rec foldi_down_right f max min a =
   if lt min max then
-    f max (foldi_down_cont f (sub max 1) min cont) a
-  else if min = max then f min cont a
-  else cont a
+    f max (foldi_down_right f (sub max 1) min) a
+  else if min = max then f min a
+  else a
 
 let print_uint x =
   Printf.fprintf stderr "%s" (to_string x);

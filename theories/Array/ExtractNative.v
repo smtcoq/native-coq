@@ -36,8 +36,8 @@ Extract Constant addmuldiv => "ExtrNative.addmuldiv".
 
 (* Pierre que faut-il faire pour celui la *)
 (* Extract Constant eqb_correct => "ExtrNative.eqb_correct". *)
-Extract Constant foldi_cont => "ExtrNative.foldi_cont".
-Extract Constant foldi_down_cont => "ExtrNative.foldi_down_cont".
+Extract Constant foldi_right => "ExtrNative.foldi_right".
+Extract Constant foldi_down_right => "ExtrNative.foldi_down_right".
 Extract Constant print_int => "ExtrNative.print_uint".
 
 (** Extraction of Array *)
