@@ -481,7 +481,21 @@ let rec get_allias env kn =
 
 (* Translation of iterators *)
 
+let isle l1 l2 = Lprim(None, Native.Int63le, [|l1;l2|])
+let islt l1 l2 = Lprim(None, Native.Int63lt, [|l1;l2|])
+let areint l1 l2 = Lareint [|l1; l2|]
 let isint l = Lareint [|l|]
+let add63 l1 l2 =Lprim(None, Native.Int63add, [|l1;l2|]) 
+let sub63 l1 l2 =Lprim(None, Native.Int63sub, [|l1;l2|]) 
+let one63 = Lint (Uint63.of_int 1)
+
+let _f = Name(id_of_string "f")
+let _min = Name (id_of_string "min") 
+let _max = Name (id_of_string "max") 
+let _cont = Name (id_of_string "cont")
+let _aux = Name (id_of_string "aux") 
+let _i = Name (id_of_string "i") 
+let _i' = Name (id_of_string "i'")
 let _a = Name (id_of_string "a")
 let r_a = mkLrel _a
 
@@ -585,14 +599,13 @@ let _h =  Name(id_of_string "h")
 
 let prim env kn op args =
   match op with
-  (* Should we expense of not *)
   | Native.Oprim Native.Int63eqb_correct ->
-    let prefix = get_const_prefix env kn in
-    let h = Lrel(_h,1) in
-    Llet(_h,args.(2),
-    Lif(isint h,
-       Lint (Uint63.of_int 0) (* constructor eq_refl *),
-    Lapp(Lconst (prefix,kn), [|lam_lift 1 args.(0);lam_lift 1 args.(1);h|])))
+      let prefix = get_const_prefix env kn in
+      let h = Lrel(_h,1) in
+      Llet(_h,args.(2),
+	Lif(isint h,
+            Lint (Uint63.of_int 0) (* constructor eq_refl *),
+	    Lapp(Lconst (prefix,kn), [|lam_lift 1 args.(0);lam_lift 1 args.(1);h|])))
   | Native.Oprim p      ->
       let prefix = get_const_prefix env kn in
       Lprim(Some (prefix, kn), p, args)

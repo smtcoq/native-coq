@@ -103,6 +103,8 @@ else
 CAMLP4USE=-D$(CAMLVERSION)
 endif
 
+CAMLP4FLAGS=-I $(CAMLLIB) unix.cma str.cma
+
 PR_O := $(if $(READABLE_ML4),pr_o.cmo,pr_dump.cmo) # works also with new camlp4
 
 ifeq ($(CAMLP4),camlp5)
@@ -542,9 +544,9 @@ $(FAKEIDE): lib/xml_lexer$(BESTOBJ) lib/xml_parser$(BESTOBJ) lib/xml_utils$(BEST
 
 ifeq ($(CAMLP4),camlp4)
 tools/compat5.cmo: tools/compat5.mlp
-	$(OCAMLC) -c -I $(MYCAMLP4LIB) -pp "$(CAMLP4O) -impl" -impl $<
+	$(OCAMLC) -c -I $(MYCAMLP4LIB) -pp "$(CAMLP4O) $(CAMLP4FLAGS) -impl" -impl $<
 tools/compat5b.cmo: tools/compat5b.mlp
-	$(OCAMLC) -c -I $(MYCAMLP4LIB) -pp "$(CAMLP4O) -impl" -impl $<
+	$(OCAMLC) -c -I $(MYCAMLP4LIB) -pp "$(CAMLP4O) $(CAMLP4FLAGS) -impl" -impl $<
 else
 tools/compat5.cmo: tools/compat5.ml
 	$(OCAMLC) -c $<
@@ -737,10 +739,10 @@ parsing/grammar.cma: kernel/resource/resource.cma | parsing/grammar.mllib.d
 	@touch test.ml4
 	$(HIDE)\
 	  export CAML_LD_LIBRARY_PATH="$(COQSRC)/kernel/resource"; \
-    $(OCAMLC) $(BYTEFLAGS) -pp "$(CAMLP4O) -I $(CAMLLIB) unix.cma $^ -impl" -impl test.ml4 -o test-grammar
+    $(OCAMLC) $(BYTEFLAGS) -pp "$(CAMLP4O) -I $(CAMLLIB) $(CAMLP4FLAGS) $^ -impl" -impl test.ml4 -o test-grammar
 	@rm -f test-grammar test.*
 	$(SHOW)'OCAMLC -a $@'   
-	$(HIDE)$(OCAMLC) $(BYTEFLAGS) unix.cma $^ -linkall -a -o $@
+	$(HIDE)$(OCAMLC) $(BYTEFLAGS) -I $(CAMLLIB) $(CAMLP4FLAGS) $^ -linkall -a -o $@
 
 # toplevel/mltop.ml4 (ifdef Byte)
 
@@ -755,19 +757,19 @@ toplevel/mltop.cmx: toplevel/mltop.optml | toplevel/mltop.ml.d toplevel/mltop.ml
 
 toplevel/mltop.ml: toplevel/mltop.ml4 config/Makefile # no camlp4deps here
 	$(SHOW)'CAMLP4O   $<'
-	$(HIDE)$(CAMLP4O) $(PR_O) $(CAMLP4USE) -DByte -DHasDynlink -impl $< -o $@
+	$(HIDE)$(CAMLP4O) $(CAMLP4FLAGS) $(PR_O) $(CAMLP4USE) -DByte -DHasDynlink -impl $< -o $@
 
 toplevel/mltop.optml: toplevel/mltop.ml4 config/Makefile # no camlp4deps here
 	$(SHOW)'CAMLP4O   $<'
-	$(HIDE)$(CAMLP4O) $(PR_O) $(CAMLP4USE) $(NATDYNLINKDEF) -impl $< -o $@
+	$(HIDE)$(CAMLP4O) $(CAMLP4FLAGS) $(PR_O) $(CAMLP4USE) $(NATDYNLINKDEF) -impl $< -o $@
 
 ide/coqide_main.ml: ide/coqide_main.ml4
 	$(SHOW)'CAMLP4O   $<'
-	$(HIDE)$(CAMLP4O) $(CAMLP4USE) -impl $< -o $@
+	$(HIDE)$(CAMLP4O) $(CAMLP4FLAGS) $(CAMLP4USE) -impl $< -o $@
 
 ide/coqide_main_opt.ml: ide/coqide_main.ml4 config/Makefile # no camlp4deps here
 	$(SHOW)'CAMLP4O   $<'
-	$(HIDE)$(CAMLP4O) $(CAMLP4USE) -D$(IDEOPTINT) -impl $< -o $@
+	$(HIDE)$(CAMLP4O) $(CAMLP4FLAGS) $(CAMLP4USE) -D$(IDEOPTINT) -impl $< -o $@
 
 
 # pretty printing of the revision number when compiling a checked out
@@ -898,7 +900,7 @@ plugins/%_mod.ml: plugins/%.mllib
 	export CAML_LD_LIBRARY_PATH="$(COQSRC)/kernel/resource"; \
 	DEPS="$(call CAMLP4DEPS,$<)"; \
 	if ls $${DEPS} > /dev/null 2>&1; then \
-	$(CAMLP4O) $(PR_O) -I $(CAMLLIB) -I kernel/resource tools/compat5.cmo $${DEPS} $(CAMLP4USE) $(CAMLP4COMPAT) -impl $< -o $@; \
+	$(CAMLP4O) $(CAMLP4FLAGS) $(PR_O) -I $(CAMLLIB) -I kernel/resource tools/compat5.cmo $${DEPS} $(CAMLP4USE) $(CAMLP4COMPAT) -impl $< -o $@; \
 	else echo $< : Dependency $${DEPS} not ready yet; false; fi
 
 %.vo %.glob: %.v states/initial.coq $(INITPLUGINSBEST) $(VO_TOOLS_STRICT) | %.v.d  $(VO_TOOLS_ORDER_ONLY)

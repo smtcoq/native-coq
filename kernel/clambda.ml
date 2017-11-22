@@ -688,8 +688,7 @@ let r_n = mkLrel _n
 let lambda_of_iterator env kn op args =
   match op with
   | Native.Int63foldi ->
-      (* FIXME *)
-      (* args = [|A;f;min;max;cont;extra|] *)
+      (* args = [|A;B;f;min;max;cont;extra|] *)
       (* 
          if min <= max then
            (rec aux i a =
@@ -734,8 +733,7 @@ let lambda_of_iterator env kn op args =
 		 extra4))))))
 	
    | Native.Int63foldi_down -> 
-      (* FIXME *) 
-      (* args = [|A;B;f;max;min;cont;extra|] *)
+       (* args = [|A;B;f;max;min;cont;extra|] *)
       (* 
          if min <= max then
            (rec aux i a =
